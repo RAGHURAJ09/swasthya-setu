@@ -1,0 +1,41 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "districtAlerts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "phcId",    "order": "ASCENDING" },
+        { "fieldPath": "resolved", "order": "ASCENDING" },
+        { "fieldPath": "severity", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "districtAlerts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "phcId",     "order": "ASCENDING" },
+        { "fieldPath": "type",      "order": "ASCENDING" },
+        { "fieldPath": "resolved",  "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "districtAlerts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "resolved",  "order": "ASCENDING" },
+        { "fieldPath": "severity",  "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "redistributionSuggestions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "approved",  "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

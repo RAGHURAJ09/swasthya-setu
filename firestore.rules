@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // PHCs — read by all authenticated users, write by staff/officer
+    match /phcs/{phcId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null &&
+        (request.auth.token.role == 'officer' || request.auth.token.role == 'staff');
+
+      match /stock/{medicineId} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null;
+      }
+      match /beds/{date} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null;
+      }
+      match /footfall/{date} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null;
+      }
+      match /staffAttendance/{date} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null;
+      }
+    }
+
+    // District alerts — read by officers, write by Cloud Functions (admin SDK)
+    match /districtAlerts/{alertId} {
+      allow read: if request.auth != null && request.auth.token.role == 'officer';
+      allow write: if false; // only Cloud Functions (admin SDK bypasses rules)
+    }
+
+    // Redistribution suggestions
+    match /redistributionSuggestions/{suggestionId} {
+      allow read: if request.auth != null && request.auth.token.role == 'officer';
+      allow update: if request.auth != null && request.auth.token.role == 'officer';
+      allow write: if false;
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "your-firebase-project-id",
+    "production": "swasthya-setu-prod",
+    "staging": "swasthya-setu-staging"
+  }
+}
