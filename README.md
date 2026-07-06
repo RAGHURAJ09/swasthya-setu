@@ -106,19 +106,64 @@ GoogleCloud-H2S/
 
 ---
 
-## ⚡ Quick Start
+## ⚡ Quick Start & Development Setup
 
-```bash
-# 1. Frontend
-cd frontend
-npm install
-npm run dev
+### 📋 Prerequisites
+- **Node.js** version 18 or higher.
+- **Firebase CLI** installed globally (`npm install -g firebase-tools`).
+- A Firebase Project on the **Blaze Plan** (required for Cloud Functions).
 
-# 2. Cloud Functions (optional — emulator)
-cd functions
-npm install
-firebase emulators:start --only functions
-```
+### 🛠️ Local Environment Configuration
+
+#### 1. Frontend Setup
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Create a `.env` file in `frontend/` containing your Firebase Web Configuration keys:
+   ```env
+   VITE_FIREBASE_API_KEY=your_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+   VITE_GEMINI_API_KEY=your_gemini_api_key_from_google_ai_studio
+   ```
+3. Install dependencies and start the local development server:
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+#### 2. Cloud Functions Setup
+1. Install tools in the functions directory:
+   ```bash
+   cd functions
+   npm install
+   ```
+2. Set configuration variables for production:
+   ```bash
+   firebase functions:config:set gemini.key="YOUR_GEMINI_API_KEY" maps.key="YOUR_MAPS_API_KEY"
+   ```
+3. (Optional) Run the local emulator suite for debugging functions:
+   ```bash
+   firebase emulators:start --only functions
+   ```
+
+### 🚀 Production Deployment
+To deploy the database rules, index specifications, built frontend, and Cloud Functions to the cloud:
+1. Build the production build of the React app:
+   ```bash
+   cd frontend
+   npm run build
+   cd ..
+   ```
+2. Deploy using the Firebase CLI:
+   ```bash
+   firebase deploy
+   ```
+
 
 ---
 
