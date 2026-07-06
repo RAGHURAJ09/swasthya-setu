@@ -113,7 +113,18 @@ GoogleCloud-H2S/
 - **Firebase CLI** installed globally (`npm install -g firebase-tools`).
 - A Firebase Project on the **Blaze Plan** (required for Cloud Functions).
 
+### 📥 Cloning the Repository
+To get started with the project locally, run the following commands in your terminal:
+```bash
+# Clone the repository
+git clone https://github.com/RAGHURAJ09/swasthya-setu.git
+
+# Move into the project directory
+cd swasthya-setu
+```
+
 ### 🛠️ Local Environment Configuration
+
 
 #### 1. Frontend Setup
 1. Navigate to the frontend directory:
