@@ -4,6 +4,7 @@ import AlertFeed from '../components/AlertFeed';
 import DistrictMap from '../components/DistrictMap';
 import RedistributionCard from '../components/RedistributionCard';
 import PHCHealthScoreRing from '../components/PHCHealthScoreRing';
+import FlaggedFacilitiesList from '../components/FlaggedFacilitiesList';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend,
@@ -272,6 +273,15 @@ export default function DistrictDashboard({ onNavigate }) {
             <Bar dataKey="ambegaon" name="Ambegaon" fill="#a78bfa" radius={[3,3,0,0]} />
           </BarChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Module D/F: Flagged Facilities with Gemini Summaries */}
+      <div>
+        <div className="flex items-center gap-3" style={{ marginBottom: '1rem' }}>
+          <h2 style={{ margin: 0 }}>AI-Flagged Facility Analysis</h2>
+          <div className="ai-chip">✦ Module D · Gemini</div>
+        </div>
+        <FlaggedFacilitiesList onNavigate={onNavigate} />
       </div>
     </div>
   );

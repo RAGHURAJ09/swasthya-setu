@@ -2,41 +2,67 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // PHCs — read by all authenticated users, write by staff/officer
+    // ── PHC / CHC Facility profiles ─────────────────────────────────────────
+    // Read: all authenticated users
+    // Write: district officers or PHC staff
     match /phcs/{phcId} {
       allow read: if request.auth != null;
       allow write: if request.auth != null &&
         (request.auth.token.role == 'officer' || request.auth.token.role == 'staff');
 
+      // Inventory / Stock
       match /stock/{medicineId} {
         allow read: if request.auth != null;
         allow write: if request.auth != null;
       }
+
+      // Bed status (date-keyed documents)
       match /beds/{date} {
         allow read: if request.auth != null;
         allow write: if request.auth != null;
       }
+
+      // Footfall (date-keyed documents)
       match /footfall/{date} {
         allow read: if request.auth != null;
         allow write: if request.auth != null;
       }
+
+      // Staff Attendance (date-keyed documents)
       match /staffAttendance/{date} {
         allow read: if request.auth != null;
         allow write: if request.auth != null;
       }
+
+      // Diagnostic Test Availability
+      match /testAvailability/{testId} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null &&
+          (request.auth.token.role == 'officer' || request.auth.token.role == 'staff');
+      }
     }
 
-    // District alerts — read by officers, write by Cloud Functions (admin SDK)
+    // ── District Alerts ──────────────────────────────────────────────────────
+    // Read: officers only
+    // Write: Cloud Functions only (Admin SDK bypasses rules);
+    //        officers can resolve (update resolved field only)
     match /districtAlerts/{alertId} {
       allow read: if request.auth != null && request.auth.token.role == 'officer';
-      allow write: if false; // only Cloud Functions (admin SDK bypasses rules)
+      allow update: if request.auth != null &&
+        request.auth.token.role == 'officer' &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['resolved', 'resolvedAt', 'resolvedBy', 'resolution']);
+      allow create, delete: if false; // Admin SDK only
     }
 
-    // Redistribution suggestions
+    // ── Redistribution Suggestions ────────────────────────────────────────────
     match /redistributionSuggestions/{suggestionId} {
       allow read: if request.auth != null && request.auth.token.role == 'officer';
-      allow update: if request.auth != null && request.auth.token.role == 'officer';
-      allow write: if false;
+      allow update: if request.auth != null &&
+        request.auth.token.role == 'officer' &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['approved', 'approvedAt', 'approvedBy']);
+      allow create, delete: if false; // Admin SDK only
     }
   }
 }

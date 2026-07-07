@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useAppStore } from '../store/appStore';
 import PHCHealthScoreRing from '../components/PHCHealthScoreRing';
+import ForecastPanel from '../components/ForecastPanel';
+import StaffAttendanceCalendar from '../components/StaffAttendanceCalendar';
 import { getDaysColor, getBedUtilColor, getHealthScoreColor } from '../utils/helpers';
 import { getPHCHealthScoreExplanation } from '../services/geminiService';
 
@@ -171,6 +173,19 @@ export default function PHCsPage({ onNavigate }) {
                 </button>
               </div>
             </div>
+
+            {/* Module B: Forecast Panel */}
+            <ForecastPanel
+              facilityId={selectedPHC.id}
+              stockItems={stockData[selectedPHC.id]}
+              facilityName={selectedPHC.name}
+            />
+
+            {/* Module F: Staff Attendance Calendar */}
+            <StaffAttendanceCalendar
+              facilityId={selectedPHC.id}
+              staffData={staffData[selectedPHC.id]}
+            />
           </div>
         ) : (
           <div className="card" style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-dim)' }}>

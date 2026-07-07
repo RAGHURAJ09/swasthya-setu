@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { useAppStore } from './store/appStore';
+import LanguageToggle from './components/LanguageToggle';
+import { useT } from './utils/i18n';
 
 // Pages
 import LoginPage         from './pages/LoginPage';
@@ -10,6 +12,7 @@ import PHCsPage          from './pages/PHCsPage';
 import StaffDashboard    from './pages/StaffDashboard';
 import CitizenView       from './pages/CitizenView';
 import RedistributionPage from './pages/RedistributionPage';
+import PHCOnboarding     from './pages/PHCOnboarding';
 
 // Components
 import Sidebar from './components/Sidebar';
@@ -27,6 +30,7 @@ function OfficerRouter({ page, onNavigate }) {
     case 'alerts':         return <AlertsPage />;
     case 'phcs':           return <PHCsPage onNavigate={onNavigate} />;
     case 'redistribution': return <RedistributionPage />;
+    case 'onboarding':     return <PHCOnboarding />;
     case 'map':            return <DistrictDashboard onNavigate={onNavigate} />;
     case 'phc-scores':     return <PHCsPage onNavigate={onNavigate} />;
     case 'stock':          return <PHCsPage onNavigate={onNavigate} />;
@@ -45,8 +49,19 @@ function CitizenRouter({ page }) {
 }
 
 export default function App() {
-  const { currentUser, currentRole, sidebarCollapsed } = useAppStore();
+  const { currentUser, currentRole, sidebarCollapsed, language } = useAppStore();
   const [activePage, setActivePage] = useState(null);
+  const [isOnline, setIsOnline]     = useState(navigator.onLine);
+  const t = useT(language);
+
+  // Listen for connectivity changes
+  useState(() => {
+    const on  = () => setIsOnline(true);
+    const off = () => setIsOnline(false);
+    window.addEventListener('online',  on);
+    window.addEventListener('offline', off);
+    return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off); };
+  });
 
   // Not logged in → show login
   if (!currentUser) return (
@@ -91,21 +106,24 @@ export default function App() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginLeft: 'auto' }}>
+            {/* Language toggle */}
+            <LanguageToggle />
+
             {/* Connectivity indicator */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
               gap: '0.4rem',
               padding: '0.3rem 0.65rem',
-              background: 'var(--color-success-bg)',
-              border: '1px solid rgba(16,185,129,0.3)',
+              background: isOnline ? 'var(--color-success-bg)' : 'rgba(239,68,68,0.1)',
+              border: `1px solid ${isOnline ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`,
               borderRadius: 'var(--radius-full)',
               fontSize: '0.7rem',
-              color: 'var(--color-success)',
+              color: isOnline ? 'var(--color-success)' : 'var(--color-critical)',
               fontWeight: 600,
             }}>
-              <span className="pulse-dot success" style={{ width: 6, height: 6 }} />
-              Connected
+              <span className={`pulse-dot ${isOnline ? 'success' : 'critical'}`} style={{ width: 6, height: 6 }} />
+              {isOnline ? t('Connected') : t('Offline')}
             </div>
 
             {/* District tag */}

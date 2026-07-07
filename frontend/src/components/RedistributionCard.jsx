@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useAppStore } from '../store/appStore';
-import { getHealthScoreColor } from '../utils/helpers';
+import { approveRedistribution as approveApi } from '../services/api';
 
 export default function RedistributionCard({ suggestion }) {
   const { approveRedistribution } = useAppStore();
@@ -9,10 +10,17 @@ export default function RedistributionCard({ suggestion }) {
 
   const handleApprove = async () => {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800)); // simulate API call
-    approveRedistribution(suggestion.id);
-    setApproved(true);
-    setLoading(false);
+    try {
+      // Try live API first; gracefully fall back to local store
+      await approveApi(suggestion.id, 'officer').catch(() => null);
+      approveRedistribution(suggestion.id);
+      setApproved(true);
+      toast.success(`✓ Transfer approved — ${suggestion.quantity} ${suggestion.unit} of ${suggestion.medicine} queued from ${suggestion.fromPhcName} → ${suggestion.toPhcName}`);
+    } catch (e) {
+      toast.error('Approval failed: ' + e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

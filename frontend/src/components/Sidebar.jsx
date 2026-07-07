@@ -12,6 +12,7 @@ const NAV_ITEMS = {
     { id: 'stock',           label: 'Stock Overview',     icon: '💊', section: 'DATA' },
     { id: 'beds',            label: 'Beds & Capacity',    icon: '🛏',  section: 'DATA' },
     { id: 'staff',           label: 'Staff Attendance',   icon: '👥',  section: 'DATA' },
+    { id: 'onboarding',      label: 'PHC Onboarding',     icon: '➕',  section: 'ADMIN' },
   ],
   staff: [
     { id: 'staff-dashboard', label: 'My PHC Dashboard',  icon: '🏥',  section: 'OVERVIEW' },

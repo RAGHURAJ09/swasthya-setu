@@ -29,11 +29,50 @@
       ]
     },
     {
+      "collectionGroup": "districtAlerts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "type",      "order": "ASCENDING" },
+        { "fieldPath": "resolved",  "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "redistributionSuggestions",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "approved",  "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "stock",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "daysUntilStockout", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "stock",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "medicineName",      "order": "ASCENDING" },
+        { "fieldPath": "daysUntilStockout", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "testAvailability",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "available",    "order": "ASCENDING" },
+        { "fieldPath": "lastAuditDate","order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "staffAttendance",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "attendanceRate", "order": "ASCENDING" }
       ]
     }
   ],

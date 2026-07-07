@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useAppStore } from '../store/appStore';
 import VoiceInput from '../components/VoiceInput';
 import PhotoStockVerifier from '../components/PhotoStockVerifier';
@@ -52,6 +53,7 @@ export default function StaffDashboard() {
           { id: 'stock',       label: '💊 Stock' },
           { id: 'voice',       label: '🎙️ Voice Entry' },
           { id: 'photo',       label: '📷 Photo Verify' },
+          { id: 'sms',         label: '📱 SMS Fallback' },
         ].map((t) => (
           <button
             key={t.id}
@@ -197,6 +199,100 @@ export default function StaffDashboard() {
           <PhotoStockVerifier phcId={phcId} stockItems={stock} />
         </div>
       )}
+
+      {/* SMS Fallback test tab */}
+      {activeTab === 'sms' && (
+        <SMSTestPanel phcId={phcId} stock={stock} updateStock={useAppStore.getState().updateStock} />
+      )}
+    </div>
+  );
+}
+
+function SMSTestPanel({ phcId, stock, updateStock }) {
+  const [msg, setMsg] = useState('STOCK PARA 200');
+  const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState(null);
+
+  const handleSend = async () => {
+    setLoading(true);
+    setResponse(null);
+    await new Promise(r => setTimeout(r, 1000)); // simulate API
+    
+    // Simulate Gemini/Parser parsing logic
+    let medMatch = null;
+    let qtyMatch = msg.match(/\d+/);
+    let parsedMedName = '';
+    
+    if (msg.toUpperCase().includes('PARA')) {
+      medMatch = stock.find(s => s.medicineName.includes('Paracetamol'));
+      parsedMedName = 'Paracetamol';
+    } else if (msg.toUpperCase().includes('AMOX')) {
+      medMatch = stock.find(s => s.medicineName.includes('Amoxicillin'));
+      parsedMedName = 'Amoxicillin';
+    } else if (msg.toUpperCase().includes('ORS')) {
+      medMatch = stock.find(s => s.medicineName.includes('ORS'));
+      parsedMedName = 'ORS';
+    }
+
+    if (medMatch && qtyMatch) {
+      updateStock(phcId, medMatch.medicineId, parseInt(qtyMatch[0]));
+      setResponse(`Twilio Reply: "Success: Logged ${qtyMatch[0]} units for ${medMatch.medicineName}."`);
+      toast.success('Stock updated via SMS logic');
+    } else {
+      setResponse(`Twilio Reply: "Could not parse medicine/quantity. Try 'STOCK [MED] [QTY]'. Fallback to Gemini... Gemini says: Please specify medicine name and quantity clearly."`);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div style={{ maxWidth: 480 }}>
+      <div className="card" style={{
+        background: 'linear-gradient(135deg, rgba(34,197,94,0.05), rgba(16,185,129,0.05))',
+        border: '1px solid rgba(34,197,94,0.2)',
+        marginBottom: '1rem',
+      }}>
+        <h3 style={{ margin: '0 0 0.25rem' }}>📱 SMS / WhatsApp Fallback</h3>
+        <p style={{ margin: 0, fontSize: '0.8rem' }}>
+          For PHCs with no internet. Staff send an SMS to a shortcode. 
+          Cloud Functions parses it (falling back to Gemini for free-text) and updates Firestore.
+        </p>
+      </div>
+
+      <div className="card">
+        <label className="label">Send an SMS (Simulation)</label>
+        <div className="flex gap-2" style={{ marginBottom: '1rem' }}>
+          <input 
+            className="input" 
+            style={{ flex: 1, fontFamily: 'monospace' }} 
+            value={msg} 
+            onChange={e => setMsg(e.target.value)} 
+            onKeyDown={e => e.key === 'Enter' && handleSend()}
+          />
+          <button className="btn btn-primary" onClick={handleSend} disabled={loading || !msg}>
+            {loading ? 'Sending...' : 'Send SMS'}
+          </button>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          <button className="btn btn-sm btn-secondary" onClick={() => setMsg('STOCK PARA 200')}>STOCK PARA 200</button>
+          <button className="btn btn-sm btn-secondary" onClick={() => setMsg('STOCK AMOX 50')}>STOCK AMOX 50</button>
+          <button className="btn btn-sm btn-secondary" onClick={() => setMsg('We got 100 packets of ORS today')}>Free text (Gemini fallback)</button>
+        </div>
+
+        {response && (
+          <div style={{
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 'var(--radius-md)',
+            padding: '1rem',
+            fontFamily: 'monospace',
+            fontSize: '0.85rem',
+            color: response.includes('Success') ? 'var(--color-success)' : 'var(--color-warning)',
+          }}>
+            &gt; {response}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,19 +1,100 @@
 /**
  * Swasthya Setu — Cloud Functions Entry Point
  *
- * Implements:
- *  - Prompt §3a: stockPrediction — daily cron, per PHC per medicine
- *  - Prompt §3b: smartRedistribution — low-stock alert → ranked donor suggestions
- *  - Prompt §3c: phcHealthScore — weekly cron, 0-100 score + Gemini explanation
- *  - Prompt §4:  smsWebhook — parse SMS stock updates via Gemini
+ * Module A — REST CRUD API           (/api/*)
+ * Module B — Demand Forecast          (/forecast/:facilityId)
+ * Module C — Redistribution Engine    (/redistribution/*)
+ * Module D — Alerting & Auto-Flag     (/alerts/run-rules, /alerts/summary/:id, /alerts/district-summary)
+ * Module E — Multilingual Voice/Text  (/intake/*)
+ * Module G — SMS/WhatsApp Fallback    (/sms/*)
  */
 
 const functions = require('firebase-functions');
 const admin     = require('firebase-admin');
 const axios     = require('axios');
+const express   = require('express');
+const cors      = require('cors');
 
 admin.initializeApp();
 const db = admin.firestore();
+
+// ─── Module imports ────────────────────────────────────────────────────────────
+const apiRouter                                             = require('./api');
+const { handleForecast, runDailyExport }                   = require('./forecast');
+const { handleGetSuggestions, handleGenerate, handleApprove, generateSuggestions } = require('./redistribution');
+const { handleRunRules, handleFacilitySummary, handleDistrictSummary, runRulesForFacility } = require('./alerting');
+const { handleVoiceIntake, handleTextIntake, handleTTS }   = require('./intake');
+const { handleSmsWebhook, handleSmsTest }                  = require('./sms');
+
+// ─── Express app ──────────────────────────────────────────────────────────────
+const app = express();
+app.use(cors({ origin: true }));
+app.use(express.json({ limit: '10mb' }));
+
+// Module A — CRUD
+app.use('/api', apiRouter);
+
+// Module B — Forecast
+app.get('/forecast/:facilityId', handleForecast);
+
+// Module C — Redistribution
+app.get('/redistribution',              handleGetSuggestions);
+app.post('/redistribution/generate',    handleGenerate);
+app.patch('/redistribution/:id/approve',handleApprove);
+
+// Module D — Alerting
+app.post('/alerts/run-rules',                   handleRunRules);
+app.get('/alerts/summary/:facilityId',          handleFacilitySummary);
+app.get('/alerts/district-summary',             handleDistrictSummary);
+
+// Module E — Multilingual intake
+app.post('/intake/voice',  handleVoiceIntake);
+app.post('/intake/text',   handleTextIntake);
+app.post('/intake/tts',    handleTTS);
+
+// Module G — SMS/WhatsApp
+app.post('/sms/webhook',   handleSmsWebhook);
+app.post('/sms/test',      handleSmsTest);
+
+// Health
+app.get('/health', (_req, res) => res.json({ status: 'ok', version: '2.0' }));
+
+/**
+ * Single HTTP Cloud Function — all routes above
+ */
+exports.api = functions.https.onRequest(app);
+
+// ─── Module B — Daily forecast export to BigQuery ────────────────────────────
+exports.dailyForecastExport = functions.pubsub
+  .schedule('every 24 hours')
+  .onRun(async () => {
+    const n = await runDailyExport();
+    functions.logger.info(`dailyForecastExport: exported ${n} rows to BigQuery`);
+    return null;
+  });
+
+// ─── Module C — Daily redistribution generation ───────────────────────────────
+exports.dailyRedistribution = functions.pubsub
+  .schedule('every 24 hours')
+  .onRun(async () => {
+    const suggestions = await generateSuggestions('baghpat');
+    functions.logger.info(`dailyRedistribution: generated ${suggestions.length} suggestions`);
+    return null;
+  });
+
+// ─── Module D — Hourly rule engine ───────────────────────────────────────────
+exports.hourlyAlertRules = functions.pubsub
+  .schedule('every 1 hours')
+  .onRun(async () => {
+    const snap = await db.collection('phcs').get();
+    let total  = 0;
+    for (const doc of snap.docs) {
+      const alerts = await runRulesForFacility(doc.id);
+      total += alerts.length;
+    }
+    functions.logger.info(`hourlyAlertRules: created ${total} alerts`);
+    return null;
+  });
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
