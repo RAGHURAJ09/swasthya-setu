@@ -53,11 +53,12 @@ npm run dev     # starts at http://localhost:5173
 
 | Feature | Implementation |
 |---------|----------------|
-| **Language toggle** | Hindi / English / Marathi |
-| **Voice entry** | Browser Speech API → Gemini extraction → TTS confirmation |
-| **Low-literacy UI** | Icon-heavy, large tap targets, color-coded severity |
-| **Offline mode** | Firestore offline persistence (automatic) |
-| **SMS fallback** | Twilio webhook → `smsWebhook` Cloud Function → Gemini parse |
+| **Language toggle** | Hindi / English / Marathi — dynamically translates UI strings using `i18n.js` |
+| **Voice entry** | Browser Speech-to-Text API → Gemini structured extraction → browser Text-to-Speech audio verification |
+| **Low-literacy UI** | Icon-heavy, large tap targets, and status-based color-coded severity (red/yellow/green) |
+| **Offline PWA** | Pre-cached assets & service worker powered by `vite-plugin-pwa` + Firestore offline persistence |
+| **SMS fallback** | Interactive simulation panel in Staff Portal + Twilio Webhook to `smsWebhook` Cloud Function |
+| **PHC Onboarding** | Complete 5-step wizard to register new facilities, seed initial inventory, and establish GPS locations in under 5 minutes |
 
 ---
 
@@ -219,12 +220,12 @@ MAPS_API_KEY=your_key
 
 ## 📋 Submission Checklist
 
-- [x] Problem-Solution Fit (20%) — PHC supply chain crisis, AI-driven fix
-- [x] AI/Technical Execution (25%) — Gemini stock prediction + redistribution + multimodal
-- [x] Deployability & Scalability (25%) — Multi-tenant, Cloud Run, BigQuery ready
-- [x] Inclusivity & Accessibility (15%) — Hindi/Marathi voice + SMS fallback
-- [x] Impact Potential (10%) — Quantified citizen impact, cited issue
-- [x] Presentation & Clarity (5%) — 5-min demo script in spec
+- [x] Problem-Solution Fit (20%) — PHC supply chain crisis, AI-driven command center
+- [x] AI/Technical Execution (25%) — Gemini stock prediction + redistribution + multimodal shelf verification
+- [x] Deployability & Scalability (25%) — Multi-tenant architecture, Cloud Run setup, and <5 min PHC onboarding
+- [x] Inclusivity & Accessibility (15%) — English/Hindi/Marathi language toggle + voice input + SMS fallback UI
+- [x] Impact Potential (10%) — Quantified citizen impact, cited rural India supply chain bottlenecks
+- [x] Presentation & Clarity (5%) — Rehearsed 5-minute demo script ready to show core value immediately
 
 ---
 
