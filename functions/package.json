@@ -4,6 +4,7 @@
   "description": "Swasthya Setu Cloud Functions — REST API, stock prediction, redistribution, PHC health score",
   "main": "src/index.js",
   "scripts": {
+    "start": "node src/index.js",
     "serve": "firebase emulators:start --only functions",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",

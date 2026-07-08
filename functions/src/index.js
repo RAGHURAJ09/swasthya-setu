@@ -15,7 +15,22 @@ const axios     = require('axios');
 const express   = require('express');
 const cors      = require('cors');
 
-admin.initializeApp();
+if (!admin.apps.length) {
+  const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
+  if (serviceAccountJson) {
+    try {
+      const serviceAccount = JSON.parse(serviceAccountJson);
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+    } catch (e) {
+      console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT:', e.message);
+      admin.initializeApp();
+    }
+  } else {
+    admin.initializeApp();
+  }
+}
 const db = admin.firestore();
 
 // ─── Module imports ────────────────────────────────────────────────────────────
@@ -63,6 +78,14 @@ app.get('/health', (_req, res) => res.json({ status: 'ok', version: '2.0' }));
  * Single HTTP Cloud Function — all routes above
  */
 exports.api = functions.https.onRequest(app);
+
+// Start standalone server if run directly (e.g. on Render)
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
 // ─── Module B — Daily forecast export to BigQuery ────────────────────────────
 exports.dailyForecastExport = functions.pubsub
