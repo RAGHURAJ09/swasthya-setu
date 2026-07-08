@@ -133,7 +133,7 @@ export default function DistrictDashboard({ onNavigate }) {
       </div>
 
       {/* Stat cards */}
-      <div className="grid-3" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+      <div className="grid-3">
         {STAT_CARDS.map((s) => (
           <div
             key={s.label}

@@ -174,11 +174,11 @@ export default function PHCOnboarding() {
         <span style={{ fontSize: '0.875rem', flex: 1 }}>Initial medicine stock ({form.stock.length} items)</span>
         <button className="btn btn-sm btn-secondary" onClick={addMed}>+ Add Medicine</button>
       </div>
-      <div className="flex-col" style={{ display: 'flex', gap: '0.6rem' }}>
+      <div className="flex-col" style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
         {form.stock.map((m, i) => (
           <div key={i} style={{
             display: 'grid', gridTemplateColumns: '2fr 80px 80px 80px 80px 32px',
-            gap: '0.5rem', alignItems: 'center',
+            gap: '0.5rem', alignItems: 'center', minWidth: '540px',
           }}>
             <input className="input" style={{ fontSize: '0.8rem' }} placeholder="Medicine name" value={m.name}
               onChange={e => setStock(i, 'name', e.target.value)} />
@@ -213,7 +213,7 @@ export default function PHCOnboarding() {
             onChange={e => set('bedCapacity', parseInt(e.target.value))} />
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
+      <div className="grid-4" style={{ gap: '0.75rem' }}>
         {[['doctors','Doctors'],['nurses','Nurses'],['pharmacists','Pharmacists'],['support','Support']].map(([k,l]) => (
           <div key={k} className="form-group">
             <label className="label" style={{ fontSize: '0.75rem' }}>{l}</label>
@@ -230,7 +230,7 @@ export default function PHCOnboarding() {
         padding: '1.25rem', border: '1px solid var(--color-border)',
       }}>
         <h4 style={{ marginBottom: '1rem', color: 'var(--color-primary)' }}>📋 Onboarding Summary</h4>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem 2rem', fontSize: '0.85rem' }}>
+        <div className="grid-2" style={{ gap: '0.5rem 2rem', fontSize: '0.85rem' }}>
           {[
             ['Facility', `${form.name} (${form.type})`],
             ['District/Block', `${form.district} / ${form.block}`],
@@ -268,7 +268,7 @@ export default function PHCOnboarding() {
           {form.stock.length} medicines loaded · {form.staffCount} staff records created ·
           Real-time monitoring active for {form.block} block
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div className="grid-3" style={{ gap: '1rem', marginBottom: '1.5rem' }}>
           {[
             { icon: '💊', label: 'Stock items', value: form.stock.length },
             { icon: '👥', label: 'Staff', value: form.staffCount },
@@ -299,9 +299,9 @@ export default function PHCOnboarding() {
       </div>
 
       {/* Progress stepper */}
-      <div className="flex items-center gap-0" style={{ gap: 0 }}>
+      <div className="flex items-center gap-0" style={{ gap: 0, flexWrap: 'wrap', marginBottom: '1rem' }}>
         {STEPS.map((s, i) => (
-          <div key={i} className="flex items-center" style={{ flex: 1 }}>
+          <div key={i} className="flex items-center" style={{ flex: '1 1 auto', minWidth: '95px', margin: '0.25rem 0' }}>
             <div style={{
               width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
               background: i < step ? 'var(--color-success)' : i === step ? 'var(--color-primary)' : 'var(--color-surface-2)',

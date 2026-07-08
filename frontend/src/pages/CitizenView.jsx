@@ -153,7 +153,7 @@ export default function CitizenView() {
 
       {/* Info cards */}
       {!searched && (
-        <div className="grid-3" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginTop: '0.5rem' }}>
+        <div className="grid-3" style={{ marginTop: '0.5rem' }}>
           {[
             { icon: '📍', label: `${phcs.length} PHCs`, sub: 'in Pune district' },
             { icon: '⏱',  label: 'Real-time', sub: 'stock availability' },

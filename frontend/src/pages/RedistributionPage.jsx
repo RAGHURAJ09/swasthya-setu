@@ -19,7 +19,7 @@ export default function RedistributionPage() {
       {/* How it works */}
       <div className="card" style={{ background: 'linear-gradient(135deg, rgba(14,165,233,0.05), rgba(99,102,241,0.05))', border: '1px solid rgba(14,165,233,0.2)' }}>
         <h4 style={{ marginBottom: '0.75rem' }}>How AI Redistribution Works</h4>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+        <div className="grid-4" style={{ gap: '1rem' }}>
           {[
             { step: '1', label: 'Detect shortage', icon: '🚨', desc: 'Stock-out prediction flags a PHC below threshold' },
             { step: '2', label: 'Find donors', icon: '🔍', desc: 'Query all district PHCs for same medicine surplus' },

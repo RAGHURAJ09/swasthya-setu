@@ -74,7 +74,7 @@ export default function PHCsPage({ onNavigate }) {
                   )}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(72px, 1fr))', gap: '0.5rem' }}>
                   {[
                     { label: 'Beds', value: `${beds?.utilization || 0}%`, color: getBedUtilColor(beds?.utilization || 0), icon: '🛏' },
                     { label: 'Staff', value: `${staff?.attendanceRate?.toFixed(0) || 0}%`, color: staff?.attendanceRate >= 80 ? 'var(--color-success)' : 'var(--color-warning)', icon: '👥' },

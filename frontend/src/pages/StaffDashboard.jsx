@@ -27,7 +27,7 @@ export default function StaffDashboard() {
       </div>
 
       {/* Quick status */}
-      <div className="grid-4" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+      <div className="grid-4">
         {[
           { label: 'Patients Today', value: foot.today || 0, icon: '🏃', accent: 'var(--color-primary)' },
           { label: 'Beds Occupied',  value: `${beds.occupiedBeds || 0}/${beds.totalBeds || 0}`, icon: '🛏', accent: 'var(--color-indigo)' },

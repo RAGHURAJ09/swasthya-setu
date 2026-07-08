@@ -49,7 +49,7 @@ function CitizenRouter({ page }) {
 }
 
 export default function App() {
-  const { currentUser, currentRole, sidebarCollapsed, language } = useAppStore();
+  const { currentUser, currentRole, sidebarCollapsed, toggleSidebar, language } = useAppStore();
   const [activePage, setActivePage] = useState(null);
   const [isOnline, setIsOnline]     = useState(navigator.onLine);
   const t = useT(language);
@@ -94,18 +94,38 @@ export default function App() {
       <main className={`main-content ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
         {/* Top bar */}
         <div className="page-header">
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: '0.7rem', color: 'var(--color-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              Swasthya Setu
-            </div>
-            <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--color-text)' }}>
-              {currentRole === 'officer' ? '🏛️ District Health Officer' :
-               currentRole === 'staff'   ? '🏥 PHC Staff Portal' :
-               '👤 Citizen Services'}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {/* Mobile Hamburger toggle */}
+            <button
+              className="mobile-sidebar-toggle btn-secondary"
+              onClick={toggleSidebar}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--color-text)',
+                cursor: 'pointer',
+                fontSize: '1.25rem',
+                padding: '0.4rem',
+                marginRight: '0.25rem',
+                borderRadius: 'var(--radius-sm)',
+              }}
+              title="Menu"
+            >
+              ☰
+            </button>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--color-text-dim)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Swasthya Setu
+              </div>
+              <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--color-text)' }}>
+                {currentRole === 'officer' ? '🏛️ District Health Officer' :
+                 currentRole === 'staff'   ? '🏥 PHC Staff Portal' :
+                 '👤 Citizen Services'}
+              </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginLeft: 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: 'auto' }}>
             {/* Language toggle */}
             <LanguageToggle />
 
@@ -113,7 +133,7 @@ export default function App() {
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
+              gap: '0.3rem',
               padding: '0.3rem 0.65rem',
               background: isOnline ? 'var(--color-success-bg)' : 'rgba(239,68,68,0.1)',
               border: `1px solid ${isOnline ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`,
@@ -127,7 +147,7 @@ export default function App() {
             </div>
 
             {/* District tag */}
-            <div style={{
+            <div className="header-tag-district" style={{
               padding: '0.3rem 0.65rem',
               background: 'var(--color-surface-2)',
               border: '1px solid var(--color-border)',
@@ -139,7 +159,7 @@ export default function App() {
             </div>
 
             {/* Date */}
-            <div style={{
+            <div className="header-tag-date" style={{
               padding: '0.3rem 0.65rem',
               background: 'var(--color-surface-2)',
               border: '1px solid var(--color-border)',

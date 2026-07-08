@@ -142,9 +142,7 @@ export default function VoiceInput({ phcId, onSuccess }) {
           <div className="ai-response-box" style={{ marginBottom: '1rem' }}>
             {parsed.confirmation}
           </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
+          <div className="grid-2" style={{
             gap: '0.5rem',
             marginBottom: '1rem',
           }}>

@@ -102,7 +102,12 @@ export default function Sidebar({ activePage, onNavigate }) {
                 <button
                   key={item.id}
                   className={`nav-link ${activePage === item.id ? 'active' : ''}`}
-                  onClick={() => onNavigate(item.id)}
+                  onClick={() => {
+                    onNavigate(item.id);
+                    if (window.innerWidth <= 900 && !sidebarCollapsed) {
+                      toggleSidebar();
+                    }
+                  }}
                   title={sidebarCollapsed ? item.label : undefined}
                   style={{ justifyContent: sidebarCollapsed ? 'center' : undefined }}
                 >
