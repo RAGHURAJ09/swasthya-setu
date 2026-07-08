@@ -49,13 +49,6 @@
       "collectionGroup": "stock",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
-        { "fieldPath": "daysUntilStockout", "order": "ASCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "stock",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
         { "fieldPath": "medicineName",      "order": "ASCENDING" },
         { "fieldPath": "daysUntilStockout", "order": "ASCENDING" }
       ]
@@ -66,13 +59,6 @@
       "fields": [
         { "fieldPath": "available",    "order": "ASCENDING" },
         { "fieldPath": "lastAuditDate","order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "staffAttendance",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        { "fieldPath": "attendanceRate", "order": "ASCENDING" }
       ]
     }
   ],

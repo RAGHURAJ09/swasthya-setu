@@ -8,7 +8,13 @@
 
 ## 🚀 Live Demo
 
-```
+Access the live application directly:
+👉 **[https://swasthya-setu-1969d.web.app](https://swasthya-setu-1969d.web.app)**
+
+Or run the application locally:
+```bash
+cd frontend
+npm install
 npm run dev     # starts at http://localhost:5173
 ```
 
@@ -208,12 +214,12 @@ Well within the ₹5,000/month target for a pilot district.
 
 ```bash
 # Firebase Functions config
-firebase functions:config:set gemini.key="YOUR_GEMINI_API_KEY"
-firebase functions:config:set maps.key="YOUR_MAPS_API_KEY"
+firebase functions:config:set gemini.key="YOUR_GEMINI_API_KEY" maps.key="YOUR_MAPS_API_KEY" groq.key="YOUR_GROQ_API_KEY"
 
 # Or .env for local
 GEMINI_API_KEY=your_key
 MAPS_API_KEY=your_key
+GROQ_API_KEY=your_key
 ```
 
 ---

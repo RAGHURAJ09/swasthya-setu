@@ -19,15 +19,17 @@
 
 'use strict';
 
-const admin  = require('firebase-admin');
-const axios  = require('axios');
+const functions = require('firebase-functions');
+const admin     = require('firebase-admin');
+const axios     = require('axios');
 
 if (!admin.apps.length) admin.initializeApp();
 const db = admin.firestore();
 
-const GEMINI_URL   = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
-const GEMINI_KEY   = process.env.GEMINI_API_KEY;
-const GCP_KEY      = process.env.GCP_API_KEY || GEMINI_KEY; // same key works for STT/TTS/Translation if enabled
+const GEMINI_URL   = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+const GEMINI_KEY   = functions.config().gemini?.key || process.env.GEMINI_API_KEY;
+const GCP_KEY      = functions.config().gcp?.key    || process.env.GCP_API_KEY || GEMINI_KEY; 
+const GROQ_KEY     = functions.config().groq?.key   || process.env.GROQ_API_KEY;
 
 const LANG_CODES = {
   'hi': 'hi-IN', 'hi-IN': 'hi-IN',
@@ -39,24 +41,56 @@ const LANG_CODES = {
 // ─── Speech-to-Text ───────────────────────────────────────────────────────────
 
 async function speechToText(audioBase64, languageCode) {
-  const lang = LANG_CODES[languageCode] || 'hi-IN';
-  const res  = await axios.post(
-    `https://speech.googleapis.com/v1/speech:recognize?key=${GCP_KEY}`,
-    {
-      config: {
-        encoding:        'WEBM_OPUS',
-        sampleRateHertz: 48000,
-        languageCode:    lang,
-        alternativeLanguageCodes: ['hi-IN', 'en-IN'],
-        model:           'latest_short',
-        enableAutomaticPunctuation: true,
-      },
-      audio: { content: audioBase64 },
-    }
-  );
-  const transcript = res.data?.results?.[0]?.alternatives?.[0]?.transcript || '';
-  const confidence = res.data?.results?.[0]?.alternatives?.[0]?.confidence || 0;
-  return { transcript, confidence, detectedLanguage: lang };
+  if (!GROQ_KEY) {
+    // Fallback to Google Cloud Speech-to-Text if no Groq Key is available
+    const lang = LANG_CODES[languageCode] || 'hi-IN';
+    const res  = await axios.post(
+      `https://speech.googleapis.com/v1/speech:recognize?key=${GCP_KEY}`,
+      {
+        config: {
+          encoding:        'WEBM_OPUS',
+          sampleRateHertz: 48000,
+          languageCode:    lang,
+          alternativeLanguageCodes: ['hi-IN', 'en-IN'],
+          model:           'latest_short',
+          enableAutomaticPunctuation: true,
+        },
+        audio: { content: audioBase64 },
+      }
+    );
+    const transcript = res.data?.results?.[0]?.alternatives?.[0]?.transcript || '';
+    const confidence = res.data?.results?.[0]?.alternatives?.[0]?.confidence || 0;
+    return { transcript, confidence, detectedLanguage: lang };
+  }
+
+  // Use Groq Whisper API
+  try {
+    const audioBuffer = Buffer.from(audioBase64, 'base64');
+    const formData = new FormData();
+    // Groq API supports WEBM. We append it as audio.webm.
+    formData.append('file', new Blob([audioBuffer], { type: 'audio/webm' }), 'audio.webm');
+    formData.append('model', 'whisper-large-v3');
+    
+    // Map language code to ISO 639-1 (e.g. 'hi-IN' -> 'hi', 'mr-IN' -> 'mr')
+    const lang = (languageCode || 'hi').split('-')[0];
+    formData.append('language', lang);
+
+    const res = await axios.post(
+      'https://api.groq.com/openai/v1/audio/transcriptions',
+      formData,
+      {
+        headers: {
+          'Authorization': `Bearer ${GROQ_KEY}`,
+        },
+      }
+    );
+
+    const transcript = res.data?.text || '';
+    return { transcript, confidence: 0.99, detectedLanguage: languageCode };
+  } catch (error) {
+    console.error('Groq Speech-to-Text failed:', error.response?.data || error.message);
+    throw error;
+  }
 }
 
 // ─── Translation ──────────────────────────────────────────────────────────────

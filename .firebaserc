@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "swasthya-setu-1969d"
-  }
+    "default": "swasthya-setu-1969d",
+    "swasthya": "swasthya-setu-1969d"
+  },
+  "targets": {},
+  "etags": {}
 }

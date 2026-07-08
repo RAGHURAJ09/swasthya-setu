@@ -98,7 +98,7 @@ exports.hourlyAlertRules = functions.pubsub
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 const GEMINI_API_KEY = functions.config().gemini?.key || process.env.GEMINI_API_KEY;
 const MAPS_API_KEY   = functions.config().maps?.key   || process.env.MAPS_API_KEY;
 
@@ -267,7 +267,7 @@ exports.smartRedistribution = functions.firestore
     let travelTimes = donors.map(() => ({ distanceKm: 50, travelTimeMin: 60 })); // fallback
     try {
       const matrix = await getDistanceMatrix(origins, [toDest]);
-      if (matrix?.rows) {
+      if (matrix && matrix.status === 'OK' && matrix.rows && matrix.rows.length > 0) {
         travelTimes = matrix.rows.map((row) => ({
           distanceKm:    Math.round((row.elements[0]?.distance?.value || 50000) / 1000),
           travelTimeMin: Math.round((row.elements[0]?.duration?.value || 3600) / 60),
